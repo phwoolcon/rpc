@@ -1,0 +1,32 @@
+{
+    "name": "phwoolcon/rpc",
+    "description": "RPC Module for Phwoolcon",
+    "keywords": ["phwoolcon", "rpc", "hprose"],
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Christopher CHEN",
+            "email": "fishdrowned@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "phwoolcon/phwoolcon": "~1.0",
+        "hprose/hprose-swoole": "~2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phwoolcon\\Rpc\\": "src",
+            "Phwoolcon\\Rpc\\Tests\\": "tests"
+        },
+        "exclude-from-classmap": [
+            "/tests/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
