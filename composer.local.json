@@ -1,0 +1,11 @@
+{
+    "require": {
+        "phwoolcon/rpc": "~1.0"
+    },
+    "phwoolcon-packages": [
+        {
+            "name": "phwoolcon/rpc",
+            "url": "git@github.com:phwoolcon/rpc.git"
+        }
+    ]
+}
