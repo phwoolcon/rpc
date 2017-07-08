@@ -4,10 +4,12 @@ use Phwoolcon\Rpc\Methods\Hello;
 
 return [
     'services' => [
-        'default' => [
+        'hello-world' => [
             'listen' => 'ws://0.0.0.0:2080',
             'methods' => [
-                Hello::class,
+                'hello' => [
+                    'instance' => Hello::class,
+                ],
             ],
         ],
     ],
