@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phwoolcon Hprose RPC Hello Test</title>
+    <script src="../hprose/hprose-html5-2.0.34.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    !function () {
+        var url = 'ws://' + location.host + ':2080/hello', rpc = new hprose.WebSocketClient(url);
+        window.rpcSend = function (message) {
+            rpc.hello_test(message, function (result) {
+                alert(JSON.stringify(result));
+            }, function (name, err) {
+                alert(err);
+            });
+        };
+    }();
+</script>
+<div>
+    <label>Message: <input id="message" value="Hi there">
+        <button onclick="rpcSend(document.getElementById('message').value)">Send string</button>
+    </label>
+</div>
+<div>
+    <label>JSON: <textarea id="json" cols="50" rows="10">{
+    "hello": "world"
+}</textarea>
+        <button onclick="rpcSend(JSON.parse(document.getElementById('json').value))">Send JSON</button>
+    </label>
+</div>
+</body>
+</html>

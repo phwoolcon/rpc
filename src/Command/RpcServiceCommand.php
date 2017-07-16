@@ -73,6 +73,7 @@ start | stop | stop-all | status | status-all | list")
             }
         }
         $service = new Service($serviceName);
+        $service->setCliCommand($this);
         return $service;
     }
 }
