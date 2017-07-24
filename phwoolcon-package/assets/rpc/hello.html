@@ -1,33 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Phwoolcon Hprose RPC Hello Test</title>
-    <script src="../hprose/hprose-html5-2.0.34.min.js"></script>
+    <style>
+        body{
+            font:1em sans-serif;
+        }
+
+        .time, .who, .comment{
+            font-size:.8em;
+            margin-right:1em;
+        }
+    </style>
+    <script src="../hprose/hprose-html5-2.0.34.js"></script>
 </head>
 <body>
-<script type="text/javascript">
-    !function () {
-        var url = 'ws://' + location.host + ':2080/hello', rpc = new hprose.WebSocketClient(url);
-        window.rpcSend = function (message) {
-            rpc.hello_test(message, function (result) {
-                alert(JSON.stringify(result));
-            }, function (name, err) {
-                alert(err);
-            });
-        };
-    }();
-</script>
 <div>
+    <div id="history"></div>
     <label>Message: <input id="message" value="Hi there">
-        <button onclick="rpcSend(document.getElementById('message').value)">Send string</button>
+        <button id="btn-send">Send</button>
     </label>
 </div>
-<div>
-    <label>JSON: <textarea id="json" cols="50" rows="10">{
-    "hello": "world"
-}</textarea>
-        <button onclick="rpcSend(JSON.parse(document.getElementById('json').value))">Send JSON</button>
-    </label>
-</div>
+<script type="text/javascript">
+    !function (w, d) {
+        var elById = function (id) {
+                return d.getElementById(id);
+            },
+            btnSend = elById("btn-send"),
+            messageBox = elById("message"),
+            historyBox = elById("history");
+
+        var url = 'ws://' + location.host + ':2080/hello',
+            rpc = new hprose.WebSocketClient(url),
+            debug = function (message) {
+                console.debug(message);
+            },
+            formatTime = function (timestamp) {
+                var time = new Date(timestamp * 1000), dateString, timeString;
+                dateString = [time.getFullYear(), time.getMonth() + 1, time.getDate()].join('-');
+                timeString = [
+                    time.getHours(),
+                    ('00' + time.getMinutes()).substr(-2),
+                    ('00' + time.getSeconds()).substr(-2)
+                ].join(':');
+                return dateString + ' ' + timeString;
+            },
+            sendChat = function (message) {
+                message = message.trim();
+                rpc.hello_test(rpc.id, message, function (result) {
+                    if (result === true) {
+                        messageBox.value = '';
+                    }
+                }, function (name, err) {
+                    alert(err);
+                });
+            },
+            appendChat = function (message) {
+                var row = d.createElement('P');
+                row.innerHTML += '<div class="who">' + message.from_name + '</div>';
+                row.innerHTML += '<span class="time">' + formatTime(message.time) + '</span>';
+                row.innerHTML += message.message;
+                historyBox.appendChild(row);
+            },
+            appendComment = function (message) {
+                var row = d.createElement('P');
+                row.innerHTML += '<span class="time">' + formatTime(message.time) + '</span>';
+                row.innerHTML += '<span class="comment">' + message.message + '</span>';
+                historyBox.appendChild(row);
+            };
+        btnSend.addEventListener('click', function (e) {
+            sendChat(messageBox.value);
+            messageBox.focus();
+        });
+        messageBox.addEventListener('keyup', function (e) {
+            if (e.keyCode === 13) {
+                sendChat(messageBox.value);
+            }
+        });
+        w.rpc = rpc;
+
+        // Subscribe chats
+        /**
+         * Set timeout 1 day to avoid repeat connection bug
+         * @see https://github.com/hprose/hprose-html5/issues/7
+         */
+        var subscribeTimeout = 86400 * 1000;
+        rpc.subscribe('chat', function (message) {
+            if (message === '') {
+                debug('Keep alive heartbeat');
+            } else if (message.type) {
+                switch (message.type) {
+                    case 'chat':
+                        appendChat(message);
+                        break;
+                    case 'join':
+                    case 'leave':
+                        appendComment(message);
+                }
+            }
+        }, subscribeTimeout);
+    }(window, document);
+</script>
 </body>
 </html>

@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 class RpcServiceCommand extends Command
 {
     protected $serviceNames;
+    protected $outputTimestamp = true;
 
     protected function configure()
     {
@@ -72,7 +73,7 @@ start | stop | stop-all | status | status-all | list")
                 exit(2);
             }
         }
-        $service = new Service($serviceName);
+        $service = new Service($serviceName, $this->di);
         $service->setCliCommand($this);
         return $service;
     }

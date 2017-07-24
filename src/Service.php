@@ -6,6 +6,7 @@ use Hprose\Swoole\Http\Server as HttpServer;
 use Hprose\Swoole\Server as Server;
 use Hprose\Swoole\Socket\Server as SocketServer;
 use Hprose\Swoole\WebSocket\Server as WebSocketServer;
+use Phalcon\Di;
 use Phwoolcon\Cli\Command;
 use Phwoolcon\Config;
 use ReflectionProperty;
@@ -21,16 +22,22 @@ class Service
         'listen' => 'ws://host:port',
         'procedures' => [],
     ];
+    /**
+     * @var Di
+     */
+    protected $di;
 
     /**
      * @var HttpServer|SocketServer|WebSocketServer
      */
     protected $server;
 
-    public function __construct($name)
+    public function __construct($name, Di $di)
     {
         $this->name = $name;
         $this->config = Config::get('rpc.services.' . $name);
+        $this->di = $di;
+        $di->setShared('current-rpc-service', $this);
     }
 
     /**
@@ -50,12 +57,18 @@ class Service
         return $this->name;
     }
 
+    public function getServer()
+    {
+        return $this->server;
+    }
+
     public function start()
     {
         $this->server = $this->createHproseServer($this->config['listen']);
         $methodNamesFunction = new \ReflectionMethod($this->server, 'getDeclaredOnlyInstanceMethods');
         $methodNamesFunction->setAccessible(true);
         $procedures = [];
+        $this->server->setPassContext(true);
         foreach ($this->config['procedures'] as $alias => $method) {
             $options = fnGet($method, 'options', []);
             if (isset($method['instance'])) {
@@ -79,6 +92,11 @@ class Service
 
     public function stop()
     {
+    }
+
+    public function getCliCommand()
+    {
+        return $this->cli;
     }
 
     /**

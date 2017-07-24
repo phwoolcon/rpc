@@ -1,6 +1,6 @@
 <?php
 
-use Phwoolcon\Rpc\Methods\Hello;
+use Phwoolcon\Rpc\Procedures\Hello;
 
 return [
     'services' => [
