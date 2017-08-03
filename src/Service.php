@@ -68,7 +68,6 @@ class Service
         $methodNamesFunction = new \ReflectionMethod($this->server, 'getDeclaredOnlyInstanceMethods');
         $methodNamesFunction->setAccessible(true);
         $procedures = [];
-        $this->server->setPassContext(true);
         foreach ($this->config['procedures'] as $alias => $method) {
             $options = fnGet($method, 'options', []);
             if (isset($method['instance'])) {
