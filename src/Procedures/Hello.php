@@ -62,7 +62,6 @@ class Hello
         $server->onAfterInvoke = function ($name, &$args, $byref, &$result, $context) {
             if ($name == '#') {
                 $this->chatters[$result] = $result;
-                $this->verbose(var_export($this->chatters, 1));
             }
         };
     }

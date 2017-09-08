@@ -1,19 +1,11 @@
 {
     "require": {
-        "phwoolcon/rpc": "~1.0",
-        "hprose/hprose": "dev-master as 2.1"
+        "phwoolcon/rpc": "~1.0"
     },
     "phwoolcon-packages": [
         {
             "name": "phwoolcon/rpc",
             "url": "git@github.com:phwoolcon/rpc.git"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:phwoolcon/hprose-php.git",
-            "vendor-alias": "hprose"
         }
     ]
 }
